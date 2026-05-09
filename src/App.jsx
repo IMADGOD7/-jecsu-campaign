@@ -97,17 +97,19 @@ function HeroSection({heroRef,candidatesRef}){
 function PosterCard({c, compact=false}){
   const [imgLoaded,setImgLoaded]=useState(false);
   const [imgError,setImgError]=useState(false);
+  const wm=(c.tag+"  ·  ").repeat(8);
+
   return(
     <div style={{display:"flex",flexDirection:"column",width:"100%",height:"100%",background:"#0a0909",overflow:"hidden"}}>
 
-      {/* ── PHOTO + OVERLAYS ── */}
-      <div style={{position:"relative",width:"100%",height:compact?"clamp(300px,55vw,480px)":"clamp(420px,65vw,640px)",overflow:"hidden",flexShrink:0}}>
+      {/* ── PHOTO + OVERLAYS — aspect-ratio 3/4 so full portrait is always visible ── */}
+      <div style={{position:"relative",width:"100%",aspectRatio:"3/4",overflow:"hidden",flexShrink:0}}>
 
         {/* photo */}
         {!imgError && (
           <img src={`/id${c.id}.jpeg`} alt={c.name}
             onLoad={()=>setImgLoaded(true)} onError={()=>setImgError(true)}
-            style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 12%",opacity:imgLoaded?1:0,transition:"opacity 0.6s ease"}}
+            style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"contain",objectPosition:"center top",opacity:imgLoaded?1:0,transition:"opacity 0.6s ease"}}
           />
         )}
         {/* fallback initials */}
@@ -117,9 +119,15 @@ function PosterCard({c, compact=false}){
           </div>
         )}
 
-        {/* vignette */}
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(0,0,0,0.18) 0%,rgba(0,0,0,0.04) 35%,rgba(0,0,0,0.45) 65%,rgba(0,0,0,0.88) 100%)"}}/>
+        {/* vignette — lighter in middle so face stays clear */}
+        <div style={{position:"absolute",inset:0,background:"linear-gradient(to bottom,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0) 25%,rgba(0,0,0,0) 55%,rgba(0,0,0,0.72) 100%)"}}/>
 
+        {/* watermark rows — pushed to edges, very subtle, won't cover the face */}
+        <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:2,display:"flex",flexDirection:"column",justifyContent:"space-between",padding:"0"}}>
+          {[0,1,2].map(i=>(
+            <div key={i} style={{fontFamily:"Inter,sans-serif",fontWeight:"800",fontSize:"clamp(18px,3.5vw,28px)",letterSpacing:"0.08em",color:"rgba(255,255,255,0.06)",whiteSpace:"nowrap",transform:i%2===0?"translateX(0)":"translateX(-8%)",lineHeight:1,userSelect:"none",padding:"6px 0"}}>{wm}</div>
+          ))}
+        </div>
 
         {/* top-left: hostel pill + college label */}
         <div style={{position:"absolute",top:"14px",left:"14px",zIndex:6}}>
@@ -136,16 +144,16 @@ function PosterCard({c, compact=false}){
         </div>
 
         {/* bottom: "vote for" + NAME */}
-        <div style={{position:"absolute",bottom:0,left:0,right:0,zIndex:6,padding:compact?"14px 16px 16px":"20px 22px 22px"}}>
-          <div style={{fontFamily:"Inter,sans-serif",fontSize:compact?"10px":"11px",fontWeight:"400",letterSpacing:"0.3em",color:"rgba(255,255,255,0.7)",textTransform:"uppercase",marginBottom:"3px"}}>vote for</div>
-          <div style={{fontFamily:"Inter,sans-serif",fontSize:compact?"clamp(17px,5vw,24px)":"clamp(22px,3.8vw,40px)",fontWeight:"800",color:"#ffffff",letterSpacing:"0.015em",lineHeight:1.05,textTransform:"uppercase",textShadow:"0 2px 16px rgba(0,0,0,0.7)"}}>{c.name}</div>
+        <div style={{position:"absolute",bottom:0,left:0,right:0,zIndex:6,padding:"16px 18px 18px"}}>
+          <div style={{fontFamily:"Inter,sans-serif",fontSize:"10px",fontWeight:"500",letterSpacing:"0.32em",color:"rgba(255,255,255,0.72)",textTransform:"uppercase",marginBottom:"4px"}}>vote for</div>
+          <div style={{fontFamily:"Inter,sans-serif",fontSize:"clamp(18px,5vw,36px)",fontWeight:"800",color:"#ffffff",letterSpacing:"0.015em",lineHeight:1.05,textTransform:"uppercase",textShadow:"0 2px 18px rgba(0,0,0,0.8)"}}>{c.name}</div>
         </div>
       </div>
 
       {/* ── GOLD ACCENT STRIP ── */}
-      <div style={{background:`linear-gradient(100deg,${G(1)},${G(0.7)})`,padding:compact?"9px 16px":"12px 22px",flexShrink:0}}>
-        <div style={{fontFamily:"Inter,sans-serif",fontSize:"9px",fontWeight:"500",letterSpacing:"0.3em",color:"rgba(0,0,0,0.5)",textTransform:"uppercase",marginBottom:"1px"}}>as your</div>
-        <div style={{fontFamily:"Inter,sans-serif",fontSize:compact?"clamp(11px,3vw,15px)":"clamp(13px,2.2vw,19px)",fontWeight:"800",color:"#000",letterSpacing:"0.06em",textTransform:"uppercase",lineHeight:1.1}}>{c.position}</div>
+      <div style={{background:`linear-gradient(100deg,${G(1)},${G(0.7)})`,padding:"11px 18px",flexShrink:0}}>
+        <div style={{fontFamily:"Inter,sans-serif",fontSize:"9px",fontWeight:"500",letterSpacing:"0.3em",color:"rgba(0,0,0,0.5)",textTransform:"uppercase",marginBottom:"2px"}}>as your</div>
+        <div style={{fontFamily:"Inter,sans-serif",fontSize:"clamp(12px,3.5vw,18px)",fontWeight:"800",color:"#000",letterSpacing:"0.05em",textTransform:"uppercase",lineHeight:1.1}}>{c.position}</div>
       </div>
     </div>
   );
